@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+	<title>js实现日历</title>
+	<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+	<style type="text/css">
+	.inline{display:inline-block;*display:inline;*zoom:1;vertical-align:top;}
+	.calander{padding:20px;}
+	.calander .cal-tip{overflow:hidden;}
+	.calander .cal-tip .fl{float:left;}
+	.calander .cal-tip .fr{float:right;}
+	.calander .cal-tip .fl i{width:10px;height:18px;background:url(images/my-lesson.png);}
+	.calander .cal-tip .fl i.prev{background-position:-79px -16px;}
+	.calander .cal-tip .fl i.next{background-position:-112px -16px;}
+	.calander .cal-tip .fl span{width:50px;margin:0 20px;font-size:16px;color:#333;line-height:18px;}
+	.calander .cal-tip .fr{font-size:14px;color:#666;}
+	.calander .cal-tip .fr i{margin-right:5px;width:14px;height:14px;background:url(images/my-lesson.png);vertical-align:middle;}
+	.calander .cal-tip .fr span{padding-left:30px;line-height:14px;}
+	.calander .cal-tip .fr .over i{background-position:0 -20px;}
+	.calander .cal-tip .fr .ing i{background-position:-20px -20px;}
+	.calander .date-info{margin-top:10px;border-collapse:collapse;color:#999;}
+	.calander .date-info th{height:30px;background-color:#e5f0f9;font-weight:normal;font-size:14px;color:#666;line-height:30px;text-align:center;}
+	.calander .date-info td{height:115px;border:1px solid #e5e5e5;vertical-align:top;}
+	.calander .date-info .day{padding-top:15px;font-size:20px;text-align:center;font-weight:normal;}
+</style>
+</head>
+<body>
+	 <div class="calander">
+        <div class="cal-tip">
+            <div class="fl">
+                <i class="prev inline" onclick="preMonth();"></i><span class="month-detail inline">2017-1-12</span><i class="next inline" onclick="nextMonth();"></i>
+            </div>
+            <div class="fr">
+                <span class="over"><i class="inline"></i>已学完</span>
+                <span class="ing"><i class="inline"></i>未学完</span>
+            </div>
+        </div>
+        <table width="100%" cellpadding="0" cellspacing="0" class="date-info">
+            <tr>
+                <th width="14.2%">周日</th>
+                <th width="14.2%">周一</th>
+                <th width="14.2%">周二</th>
+                <th width="14.2%">周三</th>
+                <th width="14.2%">周四</th>
+                <th width="14.2%">周五</th>
+                <th width="14.2%">周六</th>
+                
+            </tr>
+        </table>
+    </div>
+<script type="text/javascript">
+var nstr = new Date();
+var ynow = nstr.getFullYear();
+var mnow = nstr.getMonth();
+var dnow = nstr.getDate();
+var mnow_real = mnow;
+calendar(nstr,ynow,mnow,dnow);
+monDetail(ynow,mnow_real);
+
+function monDetail(ynow,mnow){
+  mnow_real = mnow+1;
+  $(".month-detail").html(ynow+"-"+ mnow_real);  
+}
+
+function is_leap(year) {  //判断是否为闰年
+   return (year%100==0?res=(year%400==0?1:0):res=(year%4==0?1:0));
+}
+
+function preMonth(){
+  console.log(mnow);
+  if(mnow<=0){
+    mnow=11;
+    ynow=ynow-1;
+  }else{
+    mnow--;
+  }  
+  calendar(nstr,ynow,mnow,dnow);
+  monDetail(ynow,mnow);
+}
+
+function nextMonth(){
+
+  if(mnow>=11){
+    mnow=0;
+    ynow=ynow+1;
+  }else{
+     mnow++;
+  }
+  calendar(nstr,ynow,mnow,dnow);
+  monDetail(ynow,mnow);
+
+}
+
+function calendar(nstr,ynow,mnow,dnow){
+  $(".date-info tr.date").remove();
+  var nlstr = new Date(ynow,mnow,1);  //当月第一天
+  var firstday = nlstr.getDay();        //第一天星期几
+
+  var m_days=new Array(31,28+is_leap(ynow),31,30,31,31,30,31,30,31,30,31);  //每个月的天数
+
+  var tr_str=Math.ceil((m_days[mnow] + firstday)/7);   //当前月天数+第一天是星期几的数值   获得 表格行数
+  var i,k,idx,date_str;
+  for(i=0;i<tr_str;i++) { //表格的行
+     $(".date-info tbody").append("<tr class='date'></tr>");
+     for(k=0;k<7;k++) { //表格每行的单元格
+        idx=i*7+k; //单元格自然序列号
+        date_str=idx-firstday+1; //计算日期
+        (date_str<=0 || date_str>m_days[mnow]) ? date_str="&nbsp;" : date_str=idx-firstday+1; //过滤无效日期（小于等于零的、大于月总天数的）
+        $(".date-info .date").last().append("<td class='day'>" + date_str + "</td>");
+     }
+      
+  }
+}
+
+</script>
+</body>
+</html>
